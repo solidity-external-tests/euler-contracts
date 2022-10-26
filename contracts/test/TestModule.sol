@@ -6,7 +6,7 @@ import "../BaseLogic.sol";
 
 interface ICustomError {
     struct CustomErrorPayload {
-        uint code;
+        uint codeAddress;
         string message;
     }
 
@@ -75,10 +75,10 @@ contract TestModule is BaseLogic, ICustomError {
         upgradeAdmin = upgradeAdmin; // suppress visibility warning
     }
 
-    function testRevertBytesCustomError(uint code, string calldata message) external {
+    function testRevertBytesCustomError(uint codeAddress, string calldata message) external {
         CustomErrorThrower thrower = new CustomErrorThrower();
 
-        (, bytes memory data) = address(thrower).call(abi.encodeWithSelector(CustomErrorThrower.throwCustomError.selector, code, message));
+        (, bytes memory data) = address(thrower).call(abi.encodeWithSelector(CustomErrorThrower.throwCustomError.selector, codeAddress, message));
 
         revertBytes(data);
     } 
@@ -130,9 +130,9 @@ contract TestModule is BaseLogic, ICustomError {
 }
 
 contract CustomErrorThrower is ICustomError {
-    function throwCustomError(uint code, string calldata message) external pure {
+    function throwCustomError(uint codeAddress, string calldata message) external pure {
         revert CustomError(CustomErrorPayload({
-            code: code,
+            codeAddress: codeAddress,
             message: message
         }));
     }
